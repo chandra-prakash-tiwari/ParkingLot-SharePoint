@@ -1,0 +1,6 @@
+C:\Users\user\source\repos\ParkingLot-SharePoint\ParkingLot-SharePoint.Models\obj\Debug\ParkingLot-SharePoint.Models.csprojAssemblyReference.cache
+C:\Users\user\source\repos\ParkingLot-SharePoint\ParkingLot-SharePoint.Models\obj\Debug\ParkingLot-SharePoint.Models.csproj.CoreCompileInputs.cache
+C:\Users\user\source\repos\ParkingLot-SharePoint\ParkingLot-SharePoint.Models\bin\Debug\ParkingLot-SharePoint.Models.dll
+C:\Users\user\source\repos\ParkingLot-SharePoint\ParkingLot-SharePoint.Models\bin\Debug\ParkingLot-SharePoint.Models.pdb
+C:\Users\user\source\repos\ParkingLot-SharePoint\ParkingLot-SharePoint.Models\obj\Debug\ParkingLot-SharePoint.Models.dll
+C:\Users\user\source\repos\ParkingLot-SharePoint\ParkingLot-SharePoint.Models\obj\Debug\ParkingLot-SharePoint.Models.pdb
