@@ -90,10 +90,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\CommonService.cs" />
     <Compile Include="Services\ParkingLotService.cs" />
     <Compile Include="Services\ParkingService.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="SharePointService\CommonService.cs" />
+    <Compile Include="SharePointService\ParkingLotService.cs" />
+    <Compile Include="SharePointService\ParkingService.cs" />
+    <Compile Include="SharePointService\UserService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />

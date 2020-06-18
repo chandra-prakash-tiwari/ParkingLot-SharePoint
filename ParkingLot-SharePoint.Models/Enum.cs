@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ParkingLot_SharePoint.Models
+namespace ParkingLot_SharePoint.Models.Enum
 {
-    class Enum
+    public enum Role
     {
+        Admin,
+        Manager
     }
 }

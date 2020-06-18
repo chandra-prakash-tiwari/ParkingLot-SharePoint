@@ -6,7 +6,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ParkingLot_SharePoint.Services.Services
+namespace ParkingLot_SharePoint.Services.SharePointService
 {
     public class CommonService
     {

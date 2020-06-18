@@ -1,5 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Sharing;
+using System.Collections.Generic;
 using ParkingLot_SharePoint.Models;
 using ParkingLot_SharePoint.Services.Services;
 using System;
@@ -12,7 +13,7 @@ namespace ParkingLot
     {
         static void Main()
         {
-            ClientContext clientContext = CommonService.GetonlineContext();
+            ClientContext clientContext = ParkingLot_SharePoint.Services.SharePointService.CommonService.GetonlineContext();
             UserService userService = new UserService(clientContext);
             while (true)
             {
@@ -21,20 +22,21 @@ namespace ParkingLot
                     UserService.CurrentUser = userService.Login(Login());
                     if (UserService.CurrentUser != null)
                     {
-                        if ((bool)UserService.CurrentUser["FirstTimeLogin"])
+                        if (UserService.CurrentUser.FirstTimeLogin)
                         {
-                            userService.FirstTimeLogin((int)UserService.CurrentUser["ID"], RePassword());
+                            userService.FirstTimeLogin(UserService.CurrentUser.Id, RePassword());
                         }
-                        if ((string)UserService.CurrentUser["Role"] == Convert.ToString(Role.Admin))
+                        if (UserService.CurrentUser.Type == Convert.ToString(Role.Admin))
                         {
                             ParkingLotService parkingLotService = new ParkingLotService(clientContext);
                             while (true)
                             {
+                                Console.Clear();
                                 Console.WriteLine("1. Add new Member\n2. Add new parking lots\n3. Add other parking in lot\n4. Modify parking slot\n5. Logout\n6. Exit");
                                 Int32.TryParse(Console.ReadLine(), out int option);
-                                switch (option)
+                                switch ((ManagerMenu)option)
                                 {
-                                    case 1:
+                                    case ManagerMenu.
                                         userService.AddNewUser(AddNewUser(userService, parkingLotService));
                                         break;
 
@@ -76,15 +78,18 @@ namespace ParkingLot
                                 }
                                 if (option == 5)
                                     break;
+
+                                Console.ReadKey();
                             }
                         }
 
-                        else if ((string)UserService.CurrentUser["Role"] == Convert.ToString(Role.Manager))
+                        else if (UserService.CurrentUser.Type == Convert.ToString(Role.Manager))
                         {
                             ParkingService parkingService = new ParkingService(clientContext);
                             while (true)
                             {
-                                Console.Write("1. Parking new vehical\n2. Release vehical\n3. View all parked vehical\n3. Logout\n4. Exit");
+                                Console.Clear();
+                                Console.Write("1. Parking new vehical\n2. Release vehical\n3. View all parked vehical\n4. Logout\n5. Exit");
                                 Int32.TryParse(Console.ReadLine(), out int choice);
                                 switch (choice)
                                 {
@@ -108,26 +113,29 @@ namespace ParkingLot
                                         else
                                         {
                                             var fare = parkingService.ReleaseVehical(id);
-                                            Console.WriteLine("Total fare is " + fare + "RS" + "\n" + "Amount has been collected by" + UserService.CurrentUser["Title"]);
+                                            Console.WriteLine("Total fare is " + fare + "RS" + "\n" + "Amount has been collected by " + UserService.CurrentUser.Name);
                                         }
 
                                         break;
-
+ 
                                     case 3:
-                                        parkingService.AllParkedVehical();
+                                        AllParkedVehicle(parkingService.AllParkedVehical());
                                         break;
 
                                     case 4:
+                                        break;
+                                    case 5:
                                         Environment.Exit(0);
                                         break;
 
                                     default:
-
                                         break;
 
                                 }
-                                //if (choice == 3)
-                                //    break;
+                                if (choice == 4)
+                                    break;
+
+                                Console.ReadKey();
                             }
                         }
 
@@ -208,10 +216,10 @@ namespace ParkingLot
                         while (true)
                         {
                             Console.Write("Parking slot assign : ");
-                            var place = service.HasParkingLot(Console.ReadLine());
-                            if (place != null)
+                            var id = service.HasParkingLot(Console.ReadLine());
+                            if (id != 0)
                             {
-                                user.ParkingLot = (int)place["ID"];
+                                user.ParkingLot = id;
                                 break;
                             }
                             else
@@ -232,10 +240,10 @@ namespace ParkingLot
             ParkingLotInfo parkingLot = new ParkingLotInfo();
             Console.WriteLine("Enter new details in parking");
             Console.Write("Parking Name : ");
-            ListItem parking = service.HasParkingLot(Console.ReadLine());
-            if (parking != null)
+            var id = service.HasParkingLot(Console.ReadLine());
+            if (id != 0)
             {
-                parkingLot.ParkingLotId =(int) parking["ID"];
+                parkingLot.ParkingLotId = id;
                 Console.Write("Vehical type : ");
                 parkingLot.VehicalType= Console.ReadLine();
                 while (true)
@@ -280,12 +288,12 @@ namespace ParkingLot
             ParkingLotInfo parkingLot = new ParkingLotInfo();
             Console.WriteLine("Which record you wants to modify");
             Console.Write("Name of the parking lot : ");
-            var place = service.HasParkingLot(Console.ReadLine());
-            if (place != null)
+            var id = service.HasParkingLot(Console.ReadLine());
+            if (id != 0)
             {
-                parkingLot.ParkingLotId = (int)place["ID"];
+                parkingLot.ParkingLotId = id;
                 Console.Write("Enter vehical type : ");
-                var parkingLotInfoId=service.GetParkingLotId(parkingLot.ParkingLotId, Console.ReadLine());
+                var parkingLotInfoId=service.GetParkingLotId(Console.ReadLine());
                 if (parkingLotInfoId != 0)
                 {
                     parkingLot.Id = parkingLotInfoId;
@@ -350,12 +358,44 @@ namespace ParkingLot
             int id= parkingService.GetVehicalId(vehical.VehicalNumber);
             return id; 
         }
+
+        public static void AllParkedVehicle(List<ParkedVehical> vehicles)
+        {
+            if (vehicles.Count > 0)
+            {
+                Console.WriteLine("Vehicle Number\tEntry Time");
+                foreach (var vehicle in vehicles)
+                {
+                    Console.WriteLine(vehicle.VehicalNumber + "\t" + vehicle.EnteyTime);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No vehicle parked right now.");
+            }
+
+            Console.ReadKey();
+        }
     }
 }
 
-
-enum Role
+public enum Role
 {
     Admin,
     Manager
+}
+
+public enum ManagerMenu
+{
+
+}
+
+public enum AdminMenu
+{
+    AddUser=1,
+    AddParkingLot, 
+    SetupParkingConfiguration,
+    ModifyParkingConfiguration,
+    Logout,
+    Exit
 }
